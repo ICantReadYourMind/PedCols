@@ -21,4 +21,5 @@ Then, the pedcols.dat should be adjusted accordingly. The format for the pedcols
 
 # Thanks to:
 <a href="https://github.com/DK22Pac/plugin-sdk">Plugin-SDK</a>
+
 re3
