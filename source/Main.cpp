@@ -9,14 +9,14 @@ public:
         Events::initGameEvent.AddBefore(CPedModelInfoEx::LoadPedColours);
 
         Events::pedSetModelEvent.before += [](CPed* ped, int modelIndex) { // find a random ped colour and randomly enable props here
-            CPedModelInfo* mi = (CPedModelInfo*)CModelInfo::GetModelInfo(modelIndex);
-            int extendedModelIndex = CPedModelInfoEx::GetExtendedModelIndex(mi->m_szName, false);
+            auto* pedModelInfo = (CPedModelInfo*)CModelInfo::GetModelInfo(modelIndex);
+            int extendedModelIndex = CPedModelInfoEx::GetExtendedModelIndex(pedModelInfo->m_szName, false);
 
             CPedEx pedEx;
             if (extendedModelIndex >= 0) {
-                CPedModelInfoEx& pedModelInfoEx = CPedModelInfoEx::extendedPedModelInfo[extendedModelIndex];
+                auto& pedModelInfoEx = CPedModelInfoEx::extendedPedModelInfo[extendedModelIndex];
 
-                pedModelInfoEx.CPedModelInfoEx::FindEditableMaterialList(mi);
+                pedModelInfoEx.CPedModelInfoEx::FindEditableMaterialList(pedModelInfo);
                 pedModelInfoEx.ChoosePedColour(pedEx.m_pedColour1, pedEx.m_pedColour2, pedEx.m_pedColour3, pedEx.m_pedColour4);
                 pedModelInfoEx.ChoosePedProps(pedEx.m_bProp1On, pedEx.m_bProp2On, pedEx.m_bProp3On, pedEx.m_bProp4On);
             }
@@ -25,8 +25,8 @@ public:
         };
 
         Events::pedRenderEvent.before += [](CPed* ped) { // apply the ped colour and props here
-            CPedModelInfo* mi = (CPedModelInfo*)CModelInfo::GetModelInfo(ped->m_nModelIndex);
-            int extendedModelIndex = CPedModelInfoEx::GetExtendedModelIndex(mi->m_szName, false);
+            auto* pedModelInfo = (CPedModelInfo*)CModelInfo::GetModelInfo(ped->m_nModelIndex);
+            int extendedModelIndex = CPedModelInfoEx::GetExtendedModelIndex(pedModelInfo->m_szName, false);
 
             if (extendedModelIndex >= 0) {
                 auto& pedModelInfoEx = CPedModelInfoEx::extendedPedModelInfo[extendedModelIndex];
