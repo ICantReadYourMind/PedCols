@@ -35,8 +35,8 @@ public:
     void ChoosePedColour(short& col1, short& col2, short& col3, short& col4);
     void ChoosePedProps(bool& prop1, bool& prop2, bool& prop3, bool& prop4);
 
-    void SetPedColour(short col1, short col2, short col3, short col4);
-    void SetPedProps(bool prop1, bool prop2, bool prop3, bool prop4);
+    void SetPedColour(const short& c1, const short& c2, const short& c3, const short& c4);
+    void SetPedProps(const bool& prop1, const bool& prop2, const bool& prop3, const bool& prop4);
 
     void FindEditableMaterialList(CPedModelInfo* mi);
 

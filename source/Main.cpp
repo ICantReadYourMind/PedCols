@@ -14,11 +14,11 @@ public:
 
             CPedEx pedEx;
             if (extendedModelIndex >= 0) {
-                CPedModelInfoEx* ex = &CPedModelInfoEx::extendedPedModelInfo[extendedModelIndex];
+                CPedModelInfoEx& pedModelInfoEx = CPedModelInfoEx::extendedPedModelInfo[extendedModelIndex];
 
-                ex->CPedModelInfoEx::FindEditableMaterialList(mi);
-                ex->ChoosePedColour(pedEx.m_pedColour1, pedEx.m_pedColour2, pedEx.m_pedColour3, pedEx.m_pedColour4);
-                ex->ChoosePedProps(pedEx.m_bProp1On, pedEx.m_bProp2On, pedEx.m_bProp3On, pedEx.m_bProp4On);
+                pedModelInfoEx.CPedModelInfoEx::FindEditableMaterialList(mi);
+                pedModelInfoEx.ChoosePedColour(pedEx.m_pedColour1, pedEx.m_pedColour2, pedEx.m_pedColour3, pedEx.m_pedColour4);
+                pedModelInfoEx.ChoosePedProps(pedEx.m_bProp1On, pedEx.m_bProp2On, pedEx.m_bProp3On, pedEx.m_bProp4On);
             }
             CPedEx::GetExtendedPedRef(CPools::GetPedRef(ped), true);
             CPedEx::extendedPedInfo.push_back(pedEx); // add to CPedEx "pool" and keep in sync with CPed
@@ -29,11 +29,11 @@ public:
             int extendedModelIndex = CPedModelInfoEx::GetExtendedModelIndex(mi->m_szName, false);
 
             if (extendedModelIndex >= 0) {
-                CPedModelInfoEx* ex = &CPedModelInfoEx::extendedPedModelInfo[extendedModelIndex];
-                CPedEx* pe = &CPedEx::extendedPedInfo[CPedEx::GetExtendedPedRef(CPools::GetPedRef(ped))];
+                auto& pedModelInfoEx = CPedModelInfoEx::extendedPedModelInfo[extendedModelIndex];
+                auto& pedEx = CPedEx::extendedPedInfo[CPedEx::GetExtendedPedRef(CPools::GetPedRef(ped))];
 
-                ex->SetPedColour(pe->m_pedColour1, pe->m_pedColour2, pe->m_pedColour3, pe->m_pedColour4);
-                ex->SetPedProps(pe->m_bProp1On, pe->m_bProp2On, pe->m_bProp3On, pe->m_bProp4On);
+                pedModelInfoEx.SetPedColour(pedEx.m_pedColour1, pedEx.m_pedColour2, pedEx.m_pedColour3, pedEx.m_pedColour4);
+                pedModelInfoEx.SetPedProps(pedEx.m_bProp1On, pedEx.m_bProp2On, pedEx.m_bProp3On, pedEx.m_bProp4On);
             }
         };
 

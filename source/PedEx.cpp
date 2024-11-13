@@ -35,8 +35,7 @@ int CPedModelInfoEx::GetExtendedModelIndex(std::string modelName, bool setAsWell
     auto find = std::find(names.begin(), names.end(), modelName);
 
     if (find != names.end()) { // aka something found
-        int i = find - names.begin();
-        return i;
+        return find - names.begin();
     }
     else {
         if (setAsWell)
@@ -159,149 +158,149 @@ void CPedModelInfoEx::LoadPedColours(void)
     return;
 }
 
-    void CPedModelInfoEx::FindEditableMaterialList(CPedModelInfo* mi)
+void CPedModelInfoEx::FindEditableMaterialList(CPedModelInfo* mi)
+{
+    editableMatCBData cbdata;
+
+    cbdata.ex = this;
+    RpClumpForAllAtomics(mi->m_pClump, [](RpAtomic* atomic, void* data) {
+        RpGeometryForAllMaterials(atomic->geometry, [](RpMaterial* material, void* data) {
+            RwRGBA white = { 255, 255, 255, 255 };
+            const RwRGBA* col = RpMaterialGetColor(material);
+            editableMatCBData* cbdata = (editableMatCBData*)data;
+
+            if (col->red == 0x00 && col->green == 0xFF && col->blue == 0x3C)
+            {
+                cbdata->ex->m_materials1.push_back(material);
+                RpMaterialSetColor(material, &white);
+            }
+            else if (col->red == 0xFF && col->green == 0 && col->blue == 0xAF)
+            {
+                cbdata->ex->m_materials2.push_back(material);
+                RpMaterialSetColor(material, &white);
+            }
+            else if (col->red == 0x3C && col->green == 0 && col->blue == 0xFF)
+            {
+                cbdata->ex->m_materials3.push_back(material);
+                RpMaterialSetColor(material, &white);
+            }
+            else if (col->red == 0xFF && col->green == 0 && col->blue == 0x3C)
+            {
+                cbdata->ex->m_materials4.push_back(material);
+                RpMaterialSetColor(material, &white);
+            }
+            return material;
+            }, data);
+        return atomic;
+        }, &cbdata);
+
+    m_currentColour1 = -1;
+    m_currentColour2 = -1;
+    m_currentColour3 = -1;
+    m_currentColour4 = -1;
+}
+void CPedModelInfoEx::SetPedColour(const short& c1, const short& c2, const short& c3, const short& c4)
+{
+    RwRGBA col, *colp;
+    
+    if (c1 != m_currentColour1 && c1 != 0)
     {
-        editableMatCBData cbdata;
-
-        cbdata.ex = this;
-        RpClumpForAllAtomics(mi->m_pClump, [](RpAtomic* atomic, void* data) {
-            RpGeometryForAllMaterials(atomic->geometry, [](RpMaterial* material, void* data) {
-                RwRGBA white = { 255, 255, 255, 255 };
-                const RwRGBA* col = RpMaterialGetColor(material);
-                editableMatCBData* cbdata = (editableMatCBData*)data;
-
-                if (col->red == 0x00 && col->green == 0xFF && col->blue == 0x3C)
-                {
-                    cbdata->ex->m_materials1.push_back(material);
-                    RpMaterialSetColor(material, &white);
-                }
-                else if (col->red == 0xFF && col->green == 0 && col->blue == 0xAF)
-                {
-                    cbdata->ex->m_materials2.push_back(material);
-                    RpMaterialSetColor(material, &white);
-                }
-                else if (col->red == 0x3C && col->green == 0 && col->blue == 0xFF)
-                {
-                    cbdata->ex->m_materials3.push_back(material);
-                    RpMaterialSetColor(material, &white);
-                }
-                else if (col->red == 0xFF && col->green == 0 && col->blue == 0x3C)
-                {
-                    cbdata->ex->m_materials4.push_back(material);
-                    RpMaterialSetColor(material, &white);
-                }
-                return material;
-                }, data);
-            return atomic;
-            }, &cbdata);
-
-        m_currentColour1 = -1;
-        m_currentColour2 = -1;
-        m_currentColour3 = -1;
-        m_currentColour4 = -1;
-    }
-    void CPedModelInfoEx::SetPedColour(short c1, short c2, short c3, short c4)
-    {
-        RwRGBA col, *colp;
-        
-        if (c1 != m_currentColour1 && c1 != 0)
-        {
-            col = ms_pedColourTable[abs(c1)];
-            for (const auto& material : m_materials1) {
-                colp = (RwRGBA*)RpMaterialGetColor(material);
-                colp->red = col.red;
-                colp->green = col.green;
-                colp->blue = col.blue;
-            }
-            m_currentColour1 = c1;
-        }
-
-        if (c2 != m_currentColour2 && c2 != 0)
-        {
-            col = ms_pedColourTable[abs(c2)];
-            for (const auto& material : m_materials2) {
-                colp = (RwRGBA*)RpMaterialGetColor(material);
-                colp->red = col.red;
-                colp->green = col.green;
-                colp->blue = col.blue;
-            }
-            m_currentColour2 = c2;
-        }
-
-        if (c3 != m_currentColour3 && c3 != 0)
-        {
-            col = ms_pedColourTable[abs(c3)];
-            for (const auto& material : m_materials3) {
-                colp = (RwRGBA*)RpMaterialGetColor(material);
-                colp->red = col.red;
-                colp->green = col.green;
-                colp->blue = col.blue;
-            }
-            m_currentColour3 = c3;
-        }
-
-        if (c4 != m_currentColour4 && c4 != 0)
-        {
-            col = ms_pedColourTable[abs(c4)];
-            for (const auto& material : m_materials4) {
-                colp = (RwRGBA*)RpMaterialGetColor(material);
-                colp->red = col.red;
-                colp->green = col.green;
-                colp->blue = col.blue;
-            }
-            m_currentColour4 = c4;
-        }
-    }
-    void CPedModelInfoEx::SetPedProps(bool prop1, bool prop2, bool prop3, bool prop4)
-    {
-        RwRGBA *colp;
-
+        col = ms_pedColourTable[abs(c1)];
         for (const auto& material : m_materials1) {
             colp = (RwRGBA*)RpMaterialGetColor(material);
-            colp->alpha = prop1 ? 255 : 0;
+            colp->red = col.red;
+            colp->green = col.green;
+            colp->blue = col.blue;
         }
+        m_currentColour1 = c1;
+    }
 
+    if (c2 != m_currentColour2 && c2 != 0)
+    {
+        col = ms_pedColourTable[abs(c2)];
         for (const auto& material : m_materials2) {
             colp = (RwRGBA*)RpMaterialGetColor(material);
-            colp->alpha = prop2 ? 255 : 0;
+            colp->red = col.red;
+            colp->green = col.green;
+            colp->blue = col.blue;
         }
+        m_currentColour2 = c2;
+    }
 
+    if (c3 != m_currentColour3 && c3 != 0)
+    {
+        col = ms_pedColourTable[abs(c3)];
         for (const auto& material : m_materials3) {
             colp = (RwRGBA*)RpMaterialGetColor(material);
-            colp->alpha = prop3 ? 255 : 0;
+            colp->red = col.red;
+            colp->green = col.green;
+            colp->blue = col.blue;
         }
+        m_currentColour3 = c3;
+    }
 
+    if (c4 != m_currentColour4 && c4 != 0)
+    {
+        col = ms_pedColourTable[abs(c4)];
         for (const auto& material : m_materials4) {
             colp = (RwRGBA*)RpMaterialGetColor(material);
-            colp->alpha = prop4 ? 255 : 0;
+            colp->red = col.red;
+            colp->green = col.green;
+            colp->blue = col.blue;
         }
+        m_currentColour4 = c4;
+    }
+}
+void CPedModelInfoEx::SetPedProps(const bool& prop1, const bool& prop2, const bool& prop3, const bool& prop4)
+{
+    RwRGBA *colp;
+
+    for (const auto& material : m_materials1) {
+        colp = (RwRGBA*)RpMaterialGetColor(material);
+        colp->alpha = prop1 ? 255 : 0;
     }
 
-    void CPedModelInfoEx::ChoosePedColour(short& col1, short& col2, short& col3, short& col4)
-    {
-        if (m_numColours < 1)
-            return;
-        m_lastColorVariation = rand() % m_numColours;
-        col1 = m_colours1[m_lastColorVariation];
-        col2 = m_colours2[m_lastColorVariation];
-        col3 = m_colours3[m_lastColorVariation];
-        col4 = m_colours4[m_lastColorVariation];
+    for (const auto& material : m_materials2) {
+        colp = (RwRGBA*)RpMaterialGetColor(material);
+        colp->alpha = prop2 ? 255 : 0;
     }
-    void CPedModelInfoEx::ChoosePedProps(bool& prop1, bool& prop2, bool& prop3, bool& prop4) {
-        if (m_colours1[m_lastColorVariation] < 0)
-            prop1 = rand() % 2;
-        else
-            prop1 = true;
-        if (m_colours2[m_lastColorVariation] < 0)
-            prop2 = rand() % 2;
-        else
-            prop2 = true;
-        if (m_colours3[m_lastColorVariation] < 0)
-            prop3 = rand() % 2;
-        else
-            prop3 = true;
-        if (m_colours4[m_lastColorVariation] < 0)
-            prop4 = rand() % 2;
-        else
-            prop4 = true;
+
+    for (const auto& material : m_materials3) {
+        colp = (RwRGBA*)RpMaterialGetColor(material);
+        colp->alpha = prop3 ? 255 : 0;
     }
+
+    for (const auto& material : m_materials4) {
+        colp = (RwRGBA*)RpMaterialGetColor(material);
+        colp->alpha = prop4 ? 255 : 0;
+    }
+}
+
+void CPedModelInfoEx::ChoosePedColour(short& col1, short& col2, short& col3, short& col4)
+{
+    if (m_numColours < 1)
+        return;
+    m_lastColorVariation = rand() % m_numColours;
+    col1 = m_colours1[m_lastColorVariation];
+    col2 = m_colours2[m_lastColorVariation];
+    col3 = m_colours3[m_lastColorVariation];
+    col4 = m_colours4[m_lastColorVariation];
+}
+void CPedModelInfoEx::ChoosePedProps(bool& prop1, bool& prop2, bool& prop3, bool& prop4) {
+    if (m_colours1[m_lastColorVariation] < 0)
+        prop1 = rand() % 2;
+    else
+        prop1 = true;
+    if (m_colours2[m_lastColorVariation] < 0)
+        prop2 = rand() % 2;
+    else
+        prop2 = true;
+    if (m_colours3[m_lastColorVariation] < 0)
+        prop3 = rand() % 2;
+    else
+        prop3 = true;
+    if (m_colours4[m_lastColorVariation] < 0)
+        prop4 = rand() % 2;
+    else
+        prop4 = true;
+}
