@@ -1,5 +1,12 @@
+
+# Use a "#" for line comments.
+
 col
 0	0	0	# 0
+
+# Colour table taken from VCS.
+# This section stores the RGB values for each colour index. The first index, e.g. 0 is always white and opaque. All values are indexed one after another, so the second line would be colour index 1, fourth line colour index 3, etc.
+
 181	173	148	# 1
 123	107	90	# 2
 57	41	33	# 3
@@ -129,12 +136,7 @@ col
 239	165	156	# 127
 end
 ped
-cop, 109,-126,0,0, 109,126,0,0, 109,126,0,0, 109,126,0,0
+# The ones that are negative here will have a 50% chance of being invisible, useful for hiding props. Each ped has an indefinite amount of colour sets. Each colour set contains 4 colour table index values.
+# Check the README.md for information on how to modify pedestrian models to have pedcols.
+cop, 109,-126,0,0, 109,126,0,0, 109,-126,0,0, 109,126,0,0
 end
-
-////// NOTES (remove when using this in the game)
-The "col" section stores the RGB values for a colour index. A virtually infinite amount can be made.
-
-The "ped" section stores the colour values to choose from for each ped in sets of 4. The first element of each line in this section is always the model name. After that, the
-numbers are the index of the "col" section/table. Putting a minus sign (-) before the number here will set it so that the material this colour is assigned to will have a 50% 
-chance of being invisible, useful for hiding props. Each ped has 4 changeable material colours. A virtually infinite amount of color sets can be made for each ped.
