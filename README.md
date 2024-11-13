@@ -1,5 +1,5 @@
 # PedColsVC
-This mod adds varying pedestrian colours to GTA Vice City.
+This mod adds varying pedestrian colours to GTA Vice City. Extract to your game folder to use. A pedcols.dat must be present in the data folder of the game
  
  
 ### To use this, the pedestrian models have to be adjusted. The materials for which you want colours to change must be like this:
