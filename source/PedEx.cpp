@@ -26,27 +26,27 @@ int CPedEx::GetExtendedPedRef(int pedRef, bool setAsWell, bool erase) {
         }
         return extendedPedRef;
     }
+
+    return -999; // nothing found
 }
 
 int CPedModelInfoEx::GetExtendedModelIndex(std::string modelName, bool setAsWell)
 {
     static std::vector<std::string> names{};
 
+    if (setAsWell)
+    {
+        names.push_back(modelName);
+        return 0;
+    }
+
     auto find = std::find(names.begin(), names.end(), modelName);
 
     if (find != names.end()) { // aka something found
         return find - names.begin();
     }
-    else {
-        if (setAsWell)
-        {
-            names.push_back(modelName);
-            return 0;
-        }
-        else {
-            return -999; // nothing found
-        }
-    }
+
+    return -999; // nothing found
 }
 
 void CPedModelInfoEx::LoadPedColours(void)
