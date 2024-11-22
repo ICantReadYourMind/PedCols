@@ -1,5 +1,12 @@
-
 # Use a "#" for line comments.
+
+# Add extra materials or change material colours here
+mat
+0, 255, 60 
+255, 0, 175
+60, 0, 255 
+255, 0, 60 
+end
 
 col
 0	0	0	# 0
@@ -136,7 +143,9 @@ col
 239	165	156	# 127
 end
 ped
-# The ones that are negative here will have a 50% chance of being invisible, useful for hiding props. Each ped has an indefinite amount of colour sets. Each colour set contains 4 colour table index values.
+# The ones that are negative here will have a 50% chance of being invisible, useful for hiding props. Each ped has an indefinite amount of colour sets.
+# Each colour set contains as many colour table index values as it has materials (defined in mat section).
+# You need to define any ped with remappable textures here, you don't need to set colours if you don't need them though.
 # Check the README.md for information on how to modify pedestrian models to have pedcols.
 cop, 109,-126,0,0, 109,126,0,0, 109,-126,0,0, 109,126,0,0
 end

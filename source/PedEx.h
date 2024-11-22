@@ -7,57 +7,44 @@
 class CPedModelInfoEx {
 public:
     static std::vector<RwRGBA> ms_pedColourTable;
+    static std::vector<RwRGBA> ms_editableMaterialColours;
+    static std::vector<short> ms_pedPropChances;
     static std::vector<CPedModelInfoEx> extendedPedModelInfo;
 
-    std::vector<RpMaterial*> m_materials1;
-    std::vector<RpMaterial*> m_materials2;
-    std::vector<RpMaterial*> m_materials3;
-    std::vector<RpMaterial*> m_materials4;
+    std::vector<std::vector<RpMaterial*>> m_materials;
+    std::vector<std::vector<short>> m_colours;
 
-    std::vector<short> m_colours1;
-    std::vector<short> m_colours2;
-    std::vector<short> m_colours3;
-    std::vector<short> m_colours4;
+    std::vector<std::vector<RpMaterial*>> m_remapMaterials;
+    std::vector<std::vector<std::string>> m_remapTextures;
 
-    unsigned short m_numColours;
-    short m_lastColorVariation;
-
-    short m_currentColour1;
-    short m_currentColour2;
-    short m_currentColour3;
-    short m_currentColour4;
+    size_t m_lastColorVariation;
 
     struct editableMatCBData
     {
         CPedModelInfoEx* ex;
     };
 
-    void ChoosePedColour(short& col1, short& col2, short& col3, short& col4);
-    void ChoosePedProps(bool& prop1, bool& prop2, bool& prop3, bool& prop4);
+    void FindEditableMaterialList(CPedModelInfo* pedModelInfo);
 
-    void SetPedColour(const short& c1, const short& c2, const short& c3, const short& c4);
-    void SetPedProps(const bool& prop1, const bool& prop2, const bool& prop3, const bool& prop4);
+    void ChoosePedColoursAndProps(std::vector<short>& colours, std::vector<bool>& props, bool useFirstColour = false);
+    void ChooseVariablePedTextures(std::vector<std::string>& textures, bool useFirstTexture = false);
 
-    void FindEditableMaterialList(CPedModelInfo* mi);
+    void SetVariablePedTextures(const std::vector<std::string>& textures, const int& txdIndex);
+    void SetPedColoursAndProps(const std::vector<short>& colours, const std::vector<bool>& props);
 
-    static int GetExtendedModelIndex(std::string modelName, bool setAsWell = false);
-
-    static void LoadPedColours(void);
+    static int GetExtendedModelIndex(const std::string& modelName, bool setAsWell = false);
+    static void LoadPedColours(bool reload = false);
 };
 
 class CPedEx {
 public:
     static std::vector<CPedEx> extendedPedInfo;
 
-    short m_pedColour1;
-    short m_pedColour2;
-    short m_pedColour3;
-    short m_pedColour4;
+    int pedRef;
 
-    bool m_bProp1On;
-    bool m_bProp2On;
-    bool m_bProp3On;
-    bool m_bProp4On;
+    std::vector<short> m_pedColours;
+    std::vector<bool> m_bPropsOn;
+    std::vector<std::string> m_currentTextures;
 
-    static int GetExtendedPedRef(int pedRef, bool setAsWell = false, bool erase = false);
+    static int GetExtendedPedRef(const int& pedRef, bool setAsWell = false, bool erase = false);
 };
