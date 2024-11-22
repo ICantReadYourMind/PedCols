@@ -1,8 +1,8 @@
-# PedCols
-This mod adds varying pedestrian colours to GTA Vice City and GTA III. Extract to your game folder to use. A pedcols.dat must be present in the data folder of the game (an example one is provided in the archive).
+# PedVariations
+This mod adds varying pedestrian colours and textures to GTA Vice City and GTA III. Extract to your game folder to use. A pedcols.dat must be present in the data folder of the game (an example one is provided in the archive).
  
  
-### To use this, the pedestrian models have to be adjusted. Alternatively, you can use converted pedestrian models from Vice City Stories. The materials for which you want colours to change must be like this:
+### To use this, the pedestrian models have to be adjusted. Alternatively, you can use converted pedestrian models from Vice City Stories. The materials for which you want colours to change must be like this (also check the mat section of the pedcols.dat file):
 
 
 
@@ -16,6 +16,9 @@ Fourth material- R:0xFF G:0 B:0x3C
 
 
 Then, the pedcols.dat should be adjusted accordingly. There is an example pedcols.dat in the source folder and in the release archive.
+
+## Adding variable pedestrian textures
+To add varying pedestrian textures, you must set the texture name of the texture (adjust the model as well) you want to vary to set to something like varX_Y, where X is the texture/"thing" to be varied, and Y is the index of the texture that can be used to vary the texture. X and Y can be anything from 0 to infinity. The mod looks for these textures in the txd file of the pedestrian model.
 
 ![image](https://github.com/user-attachments/assets/9b1c3808-858c-47a1-bdad-8053efeff9b1)
 
