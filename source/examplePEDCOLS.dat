@@ -13,7 +13,7 @@ col
 
 # Colour table taken from VCS.
 # This section stores the RGB values for each colour index. The first index, e.g. 0 is always white and opaque. All values are indexed one after another, so the second line would be colour index 1, fourth line colour index 3, etc.
-
+# Add a value after the blue value here to set the chance for props when they pick this color. For example, 4 for chance will set it to 1 in 4 chance, and -4 will set it to 3 in 4 chance (aka n-1 in n chance)
 181	173	148	# 1
 123	107	90	# 2
 57	41	33	# 3
