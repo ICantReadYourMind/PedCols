@@ -1,5 +1,4 @@
 #include "plugin.h"
-#include "CTxdStore.h"
 #include "PedEx.h"
 
 #ifdef GTA3
