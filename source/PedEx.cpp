@@ -275,17 +275,16 @@ void CPedModelInfoEx::FindEditableMaterialList(CPedModelInfo* pedModelInfo)
                     cbdata->ex->m_materials[i].push_back(material);
                     RpMaterialSetColor(material, &white);
                 }
+            }
+            if (RpMaterialGetTexture(material)) // check if material has texture that can be varied
+            {
+                editableMatCBData* cbdata = (editableMatCBData*)data;
+                int x;
 
-                if (RpMaterialGetTexture(material)) // check if material has texture that can be varied
-                {
-                    editableMatCBData* cbdata = (editableMatCBData*)data;
-                    int x;
+                int index = sscanf(RwTextureGetName(RpMaterialGetTexture(material)), "var%d_", &x);
 
-                    int index = sscanf(RwTextureGetName(RpMaterialGetTexture(material)), "var%d_", &x);
-
-                    if (index > 0)
-                        cbdata->ex->m_remapMaterials[x].push_back(material);
-                }
+                if (index > 0)
+                    cbdata->ex->m_remapMaterials[x].push_back(material);
             }
             return material;
         }, data);
@@ -365,9 +364,9 @@ void CPedModelInfoEx::SetVariablePedTextures(const std::vector<std::string>& tex
 
     for (size_t i = 0; i < textures.size(); ++i)
     {
-        for (auto& remapMaterials : m_remapMaterials[i])
+        for (auto& remapMaterial : m_remapMaterials[i])
         {
-            RpMaterialSetTexture(&remapMaterials[i], RwTextureRead(textures[i].c_str(), 0));
+            RpMaterialSetTexture(remapMaterial, RwTextureRead(textures[i].c_str(), 0));
         }
     }
 }
