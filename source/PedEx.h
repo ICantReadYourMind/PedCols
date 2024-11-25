@@ -17,6 +17,9 @@ public:
     std::vector<std::vector<RpMaterial*>> m_remapMaterials;
     std::vector<std::vector<std::string>> m_remapTextures;
 
+    std::vector<std::vector<RpMaterial*>> m_skinRemapMaterials;
+    std::vector<std::vector<std::string>> m_skinRemapTextures;
+
     size_t m_lastColorVariation;
 
     struct editableMatCBData
@@ -27,9 +30,9 @@ public:
     void FindEditableMaterialList(CPedModelInfo* pedModelInfo);
 
     void ChoosePedColoursAndProps(std::vector<short>& colours, std::vector<bool>& props, bool useFirstColour = false);
-    void ChooseVariablePedTextures(std::vector<std::string>& textures, bool useFirstTexture = false);
+    void ChooseVariablePedTextures(std::vector<std::string>& textures, size_t& skinColourIndex, bool useFirstTexture = false);
 
-    void SetVariablePedTextures(const std::vector<std::string>& textures, const int& txdIndex);
+    void SetVariablePedTextures(const std::vector<std::string>& textures, const size_t& skinColourIndex, const int& txdIndex);
     void SetPedColoursAndProps(const std::vector<short>& colours, const std::vector<bool>& props);
 
     static int GetExtendedModelIndex(const std::string& modelName, bool setAsWell = false);
@@ -41,6 +44,7 @@ public:
     static std::vector<CPedEx> extendedPedInfo;
 
     int pedRef;
+    size_t m_currentSkinColourIndex;
 
     std::vector<short> m_pedColours;
     std::vector<bool> m_bPropsOn;

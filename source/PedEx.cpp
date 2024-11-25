@@ -71,6 +71,10 @@ void CPedModelInfoEx::LoadPedColours(bool reload)
             {
                 remapMaterials.clear();
             }
+            for (auto& skinRemapMaterials : pedModelInfoEx.m_skinRemapMaterials)
+            {
+                skinRemapMaterials.clear();
+            }
         }
         return;
     }
@@ -213,7 +217,12 @@ void CPedModelInfoEx::LoadPedColours(bool reload)
                                                                      // above statement returns some wrong values for first 8 elements of the name array
                         size_t materialIndex;
                         size_t textureIndex;
+
+                        size_t skinColourIndex;
+                        size_t skinTextureIndex;
+
                         bool found = sscanf(textureName, "var%d_%d", &materialIndex, &textureIndex);
+                        bool skinFound = sscanf(textureName, "skin%d_%d", &skinColourIndex, &skinTextureIndex);
 
                         if (found)
                         {
@@ -227,11 +236,23 @@ void CPedModelInfoEx::LoadPedColours(bool reload)
 
                             pedModelInfoEx.m_remapTextures[materialIndex][textureIndex] = textureName;
                         }
+
+                        if (skinFound)
+                        {
+                            if (skinColourIndex >= pedModelInfoEx.m_skinRemapTextures.size()) {
+                                pedModelInfoEx.m_skinRemapTextures.resize(skinColourIndex + 1);
+                                pedModelInfoEx.m_skinRemapMaterials.resize(skinColourIndex + 1);
+                            }
+
+                            if (skinTextureIndex >= pedModelInfoEx.m_skinRemapTextures[skinColourIndex].size())
+                                pedModelInfoEx.m_skinRemapTextures[skinColourIndex].resize(skinTextureIndex + 1);
+
+                            pedModelInfoEx.m_skinRemapTextures[skinColourIndex][skinTextureIndex] = textureName;
+                        }
                         current = rwLLLinkGetNext(current);
                     }
                 }
             }
-
             if (reload)
             {
                 int extendedModelIndex = GetExtendedModelIndex(pedName);
@@ -240,6 +261,7 @@ void CPedModelInfoEx::LoadPedColours(bool reload)
 
                 extendedPedModelInfo[extendedModelIndex].m_colours = pedModelInfoEx.m_colours;
                 extendedPedModelInfo[extendedModelIndex].m_remapTextures = pedModelInfoEx.m_remapTextures;
+                extendedPedModelInfo[extendedModelIndex].m_skinRemapTextures = pedModelInfoEx.m_skinRemapTextures;
             }
             else
             {
@@ -279,12 +301,17 @@ void CPedModelInfoEx::FindEditableMaterialList(CPedModelInfo* pedModelInfo)
             if (RpMaterialGetTexture(material)) // check if material has texture that can be varied
             {
                 editableMatCBData* cbdata = (editableMatCBData*)data;
-                int x;
+                int x, y;
 
-                int index = sscanf(RwTextureGetName(RpMaterialGetTexture(material)), "var%d_", &x);
+                int index = sscanf(RwTextureGetName(RpMaterialGetTexture(material)), "var%d_%d", &x, &y);
 
                 if (index > 0)
                     cbdata->ex->m_remapMaterials[x].push_back(material);
+
+                int skinIndex = sscanf(RwTextureGetName(RpMaterialGetTexture(material)), "skin%d_%d", &x, &y);
+
+                if (skinIndex > 0)
+                    cbdata->ex->m_skinRemapMaterials[y].push_back(material);
             }
             return material;
         }, data);
@@ -343,7 +370,7 @@ void CPedModelInfoEx::ChoosePedColoursAndProps(std::vector<short>& colours, std:
     }
 }
 
-void CPedModelInfoEx::ChooseVariablePedTextures(std::vector<std::string>& textures, bool useFirstTexture)
+void CPedModelInfoEx::ChooseVariablePedTextures(std::vector<std::string>& textures, size_t& skinColourIndex, bool useFirstTexture)
 {
     textures.resize(m_remapMaterials.size());
     for (size_t i = 0; i < textures.size(); ++i)
@@ -356,17 +383,28 @@ void CPedModelInfoEx::ChooseVariablePedTextures(std::vector<std::string>& textur
                 textures[i] = m_remapTextures[i][rand() % m_remapTextures[i].size()];
         }
     }
+
+    if (m_skinRemapTextures.size())
+        skinColourIndex = rand() % m_skinRemapTextures.size();
 }
 
-void CPedModelInfoEx::SetVariablePedTextures(const std::vector<std::string>& textures, const int& txdIndex)
+void CPedModelInfoEx::SetVariablePedTextures(const std::vector<std::string>& textures, const size_t& skinColourIndex, const int& txdIndex)
 {
     CTxdStore::SetCurrentTxd(txdIndex);
 
-    for (size_t i = 0; i < textures.size(); ++i)
+    for (size_t i = 0; i < m_remapMaterials.size(); ++i)
     {
         for (auto& remapMaterial : m_remapMaterials[i])
         {
             RpMaterialSetTexture(remapMaterial, RwTextureRead(textures[i].c_str(), 0));
+        }
+    }
+
+    for (size_t i = 0; i < m_skinRemapMaterials.size(); ++i)
+    {
+        for (auto& skinRemapMaterial : m_skinRemapMaterials[i])
+        {
+            RpMaterialSetTexture(skinRemapMaterial, RwTextureRead(m_skinRemapTextures[skinColourIndex][i].c_str(), 0));
         }
     }
 }
