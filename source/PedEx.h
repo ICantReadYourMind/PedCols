@@ -14,11 +14,11 @@ public:
     std::vector<std::vector<RpMaterial*>> m_materials;
     std::vector<std::vector<short>> m_colours;
 
-    std::vector<std::vector<RpMaterial*>> m_remapMaterials;
-    std::vector<std::vector<std::string>> m_remapTextures;
+    std::vector<std::vector<RpMaterial*>> m_varMaterials;
+    std::vector<std::vector<std::string>> m_varTextures;
 
-    std::vector<std::vector<RpMaterial*>> m_skinRemapMaterials;
-    std::vector<std::vector<std::string>> m_skinRemapTextures;
+    std::vector<std::vector<RpMaterial*>> m_skinVarMaterials;
+    std::vector<std::vector<std::string>> m_skinVarTextures;
 
     size_t m_lastColorVariation;
 
@@ -27,12 +27,13 @@ public:
         CPedModelInfoEx* ex;
     };
 
+    void FindPedVariations(const int& txdIndex);
     void FindEditableMaterialList(CPedModelInfo* pedModelInfo);
 
     void ChoosePedColoursAndProps(std::vector<short>& colours, std::vector<bool>& props, bool useFirstColour = false);
-    void ChooseVariablePedTextures(std::vector<std::string>& textures, size_t& skinColourIndex, bool useFirstTexture = false);
+    void ChooseVariablePedTextures(std::vector<RwTexture*>& textures, std::vector<RwTexture*>& skinTextures, const int& txdIndex, bool useFirstTexture = false);
 
-    void SetVariablePedTextures(const std::vector<std::string>& textures, const size_t& skinColourIndex, const int& txdIndex);
+    void SetVariablePedTextures(const std::vector<RwTexture*>& textures, const std::vector<RwTexture*> skinTextures);
     void SetPedColoursAndProps(const std::vector<short>& colours, const std::vector<bool>& props);
 
     static int GetExtendedModelIndex(const std::string& modelName, bool setAsWell = false);
@@ -48,7 +49,8 @@ public:
 
     std::vector<short> m_pedColours;
     std::vector<bool> m_bPropsOn;
-    std::vector<std::string> m_currentTextures;
+    std::vector<RwTexture*> m_currentTextures;
+    std::vector<RwTexture*> m_currentSkinTextures;
 
     static int GetExtendedPedRef(const int& pedRef, bool setAsWell = false, bool erase = false);
 };
