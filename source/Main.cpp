@@ -24,8 +24,16 @@ void SetModelIndexEx(CPed* ped, int modelIndex)
         pedModelInfoEx.ChoosePedColoursAndProps(pedEx.m_pedColours, pedEx.m_bPropsOn);
         pedModelInfoEx.ChooseVariablePedTextures(pedEx.m_currentTextures, pedEx.m_currentSkinTextures, pedModelInfo->m_nTxdIndex);
 
-        CPedEx::GetExtendedPedRef(pedEx.pedRef, true);
-        CPedEx::extendedPedInfo.push_back(pedEx); // add to CPedEx "pool" and keep in sync with CPed
+        int extendedPedRef = CPedEx::GetExtendedPedRef(pedEx.pedRef);
+        if (extendedPedRef >= 0)
+        {
+            CPedEx::extendedPedInfo[extendedPedRef] = pedEx;
+        }
+        else
+        {
+            CPedEx::GetExtendedPedRef(pedEx.pedRef, true);
+            CPedEx::extendedPedInfo.push_back(pedEx); // add to CPedEx "pool" and keep in sync with CPed
+        }
     }
 }
 
@@ -75,14 +83,6 @@ public:
                 auto& pedModelInfoEx = CPedModelInfoEx::extendedPedModelInfo[extendedModelIndex];
                 auto& pedEx = CPedEx::extendedPedInfo[CPedEx::GetExtendedPedRef(CPools::GetPedRef(ped))];
 
-                if (pedEx.m_currentSkinTextures.size() != pedModelInfoEx.m_skinVarMaterials.size() ||
-                    pedEx.m_currentTextures.size() != pedModelInfoEx.m_varMaterials.size()) // in case of something like changing player model, will crash otherwise
-                {
-                    pedModelInfoEx.FindPedVariations(pedModelInfo->m_nTxdIndex);
-                    pedModelInfoEx.ChoosePedColoursAndProps(pedEx.m_pedColours, pedEx.m_bPropsOn);
-                    pedModelInfoEx.ChooseVariablePedTextures(pedEx.m_currentTextures, pedEx.m_currentSkinTextures, pedModelInfo->m_nTxdIndex);
-                }
-
                 pedModelInfoEx.SetVariablePedTextures(pedEx.m_currentTextures, pedEx.m_currentSkinTextures);
                 pedModelInfoEx.SetPedColoursAndProps(pedEx.m_pedColours, pedEx.m_bPropsOn);
             }
@@ -97,18 +97,25 @@ public:
                 for (auto& pedEx : CPedEx::extendedPedInfo)
                 {
                     auto* ped = CPools::GetPed(pedEx.pedRef);
-                    auto* pedModelInfo = (CPedModelInfo*)CModelInfo::GetModelInfo(ped->m_nModelIndex);
-                    auto& pedModelInfoEx = CPedModelInfoEx::extendedPedModelInfo[CPedModelInfoEx::GetExtendedModelIndex(pedModelInfo->m_szName)];
+                    if (ped)
+                    {
+                        auto* pedModelInfo = (CPedModelInfo*)CModelInfo::GetModelInfo(ped->m_nModelIndex);
+                        auto extendedPedModelIndex = CPedModelInfoEx::GetExtendedModelIndex(pedModelInfo->m_szName);
 
-                    if (GetAsyncKeyState(reloadAndSetFirstColourKey))
-                    {
-                        pedModelInfoEx.ChoosePedColoursAndProps(pedEx.m_pedColours, pedEx.m_bPropsOn, true);
-                        pedModelInfoEx.ChooseVariablePedTextures(pedEx.m_currentTextures, pedEx.m_currentSkinTextures, pedModelInfo->m_nTxdIndex, true);
-                    }
-                    else if (GetAsyncKeyState(reloadAndSetRandomColourKey))
-                    {
-                        pedModelInfoEx.ChoosePedColoursAndProps(pedEx.m_pedColours, pedEx.m_bPropsOn, false);
-                        pedModelInfoEx.ChooseVariablePedTextures(pedEx.m_currentTextures, pedEx.m_currentSkinTextures, pedModelInfo->m_nTxdIndex, false);
+                        if (extendedPedModelIndex >= 0)
+                        {
+                            auto& pedModelInfoEx = CPedModelInfoEx::extendedPedModelInfo[extendedPedModelIndex];
+                            if (GetAsyncKeyState(reloadAndSetFirstColourKey))
+                            {
+                                pedModelInfoEx.ChoosePedColoursAndProps(pedEx.m_pedColours, pedEx.m_bPropsOn, true);
+                                pedModelInfoEx.ChooseVariablePedTextures(pedEx.m_currentTextures, pedEx.m_currentSkinTextures, pedModelInfo->m_nTxdIndex, true);
+                            }
+                            else if (GetAsyncKeyState(reloadAndSetRandomColourKey))
+                            {
+                                pedModelInfoEx.ChoosePedColoursAndProps(pedEx.m_pedColours, pedEx.m_bPropsOn, false);
+                                pedModelInfoEx.ChooseVariablePedTextures(pedEx.m_currentTextures, pedEx.m_currentSkinTextures, pedModelInfo->m_nTxdIndex, false);
+                            }
+                        }
                     }
                 }
             }

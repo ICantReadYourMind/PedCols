@@ -45,7 +45,6 @@ public:
     static std::vector<CPedEx> extendedPedInfo;
 
     int pedRef;
-    size_t m_currentSkinColourIndex;
 
     std::vector<short> m_pedColours;
     std::vector<bool> m_bPropsOn;

@@ -176,7 +176,7 @@ void CPedModelInfoEx::LoadPedColours(bool reload)
 
             ss >> pedName;
 
-            if (!ms_editableMaterialColours.size())
+            if (ms_editableMaterialColours.empty())
             { // use default material colours from VCS if there are no material colours set in pedcols.dat
                 ms_editableMaterialColours.push_back({ 0, 255, 60 });
                 ms_editableMaterialColours.push_back({ 255, 0, 175 });
@@ -200,7 +200,6 @@ void CPedModelInfoEx::LoadPedColours(bool reload)
                     ++colourNumber;
             }
 
-            CPedModelInfo* pedModelInfo = (CPedModelInfo*)CModelInfo::GetModelInfo(pedName.c_str(), 0);
             if (reload)
             {
                 int extendedModelIndex = GetExtendedModelIndex(pedName);
@@ -342,7 +341,7 @@ void CPedModelInfoEx::SetPedColoursAndProps(const std::vector<short>& colours, c
 
 void CPedModelInfoEx::ChoosePedColoursAndProps(std::vector<short>& colours, std::vector<bool>& props, bool useFirstColour)
 {
-    if (m_colours.back().size() < 1)
+    if (m_colours.back().empty())
         return;
 
     m_lastColorVariation = rand() % m_colours.back().size();
@@ -382,7 +381,7 @@ void CPedModelInfoEx::ChooseVariablePedTextures(std::vector<RwTexture*>& texture
 
     for (size_t i = 0; i < textures.size(); ++i)
     {
-        if (m_varTextures[i].size())
+        if (!m_varTextures[i].empty())
         {
             if (useFirstTexture)
                 textures[i] = RwTextureRead(m_varTextures[i][0].c_str(), 0);
@@ -391,16 +390,19 @@ void CPedModelInfoEx::ChooseVariablePedTextures(std::vector<RwTexture*>& texture
         }
     }
 
-    if (m_skinVarTextures.size())
+    if (!m_skinVarTextures.empty())
     {
         size_t skinColourIndex;
         if (useFirstTexture)
             skinColourIndex = 0;
         else
             skinColourIndex = rand() % m_skinVarTextures.size();
-        for (size_t i = 0; i < m_skinVarMaterials.size(); ++i)
+        if (!m_skinVarTextures[skinColourIndex].empty())
         {
-            skinTextures[i] = RwTextureRead(m_skinVarTextures[skinColourIndex][i].c_str(), 0);
+            for (size_t i = 0; i < m_skinVarMaterials.size(); ++i)
+            {
+                skinTextures[i] = RwTextureRead(m_skinVarTextures[skinColourIndex][i].c_str(), 0);
+            }
         }
     }
 }
